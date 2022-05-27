@@ -2,13 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SalidaService } from './salida.service';
 import { CreateSalidaDto } from './dto/create-salida.dto';
 import { UpdateSalidaDto } from './dto/update-salida.dto';
+import { Salida } from './entities/salida.entity';
 
 @Controller('salida')
 export class SalidaController {
   constructor(private readonly salidaService: SalidaService) {}
 
   @Post()
-  create(@Body() createSalidaDto: CreateSalidaDto) {
+  create(@Body() createSalidaDto: Salida) {
     return this.salidaService.create(createSalidaDto);
   }
 
@@ -27,7 +28,7 @@ export class SalidaController {
     return this.salidaService.update(+id, updateSalidaDto);
   }
 
-  @Delete(':id')
+  @Delete(':id/remove')
   remove(@Param('id') id: string) {
     return this.salidaService.remove(+id);
   }

@@ -1,8 +1,8 @@
 import { google } from 'googleapis';
 
 import { Injectable } from '@nestjs/common';
-import { CreateSalidaDto } from './dto/create-salida.dto';
 import { UpdateSalidaDto } from './dto/update-salida.dto';
+import { Salida } from './entities/salida.entity';
 
 
 
@@ -35,8 +35,19 @@ export class SalidaService {
   }
 
   
-  create(createSalidaDto: CreateSalidaDto) {
-    return 'This action adds a new salida';
+  async create(createSalidaDto: Salida) {
+    const { cantidad,fechasalida,idinsumo,idsalida,infcomplementaria,nroficharequerimiento,obs } = createSalidaDto;
+    const payload = await this.sheet.spreadsheets.values.append({
+      spreadsheetId: "1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
+      range: 'SALIDA!A2:G',
+      valueInputOption: 'USER_ENTERED',
+      requestBody: {
+        values: [[idsalida,nroficharequerimiento,infcomplementaria,idinsumo,cantidad,obs,fechasalida]],
+
+      },
+    })
+    return payload
+    
   }
 
   async findAll() {
@@ -44,33 +55,11 @@ export class SalidaService {
       {
         auth: this.auth,
         spreadsheetId:"1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
-        range: 'SALIDA!A2:G',
-        //valueInputOption: 'USER_ENTERED',
-        /*requestBody: {
-        values: [],
-        },*/
+        range: 'SALIDA!A2:G',  
       },
-      /*
-      (err, res) => {
-        if (err) {
-          console.error('The API returned an error.');
-          throw err;
-        }
-        const rows = res.data.values;
-        if (rows.length === 0) {
-          console.log('No data found.');
-        } else {
-          console.log('Name, Major:');
-          for (const row of rows) {
-            // Print columns A and E, which correspond to indices 0 and 4.
-            console.log(`${row[0]}, ${row[4]}`);
-          }
-        }
-      }*/
+      
     )
     return getRows.data
-
-    
   }
 
   findOne(id: number) {
@@ -81,8 +70,31 @@ export class SalidaService {
     return `This action updates a #${id} salida`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} salida`;
+  async remove(id: number) {
+    const res = await this.sheet.spreadsheets.values.update({
+      
+      includeValuesInResponse: true,
+            
+      responseDateTimeRenderOption: 'SERIAL_NUMBER',
+      // Determines how values in the response should be rendered. The default render option is FORMATTED_VALUE.
+      responseValueRenderOption: 'FORMATTED_VALUE',
+      // The ID of the spreadsheet to update.
+      spreadsheetId: '1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA',
+      // How the input data should be interpreted.
+      valueInputOption: 'USER_ENTERED',
+      range:'SALIDA!A48:G48',
+  
+      // Request body metadata
+      requestBody: {
+       /* // request body parameters
+        
+          majorDimension: "ROWS",
+          range:'SALIDA!A48:G48',
+          values: []*/
+        }
+    
+    })
+    return res.data
   }
 }
 
