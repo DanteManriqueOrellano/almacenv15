@@ -28,8 +28,9 @@ export class InsumoService {
 
   async update(idinsumo: string, updateInsumoDto: UpdateInsumoDto) {
     let id
-    this.ctx.dataSource.setFormulaActiveCell(idinsumo)
+    await this.ctx.dataSource.setFormulaActiveCell(idinsumo)
     id = await this.ctx.dataSource.getFormulaActiveCell()
+    console.log(id)
     return this.ctx.dataSource.update({dataObj:updateInsumoDto},id)
   }
 

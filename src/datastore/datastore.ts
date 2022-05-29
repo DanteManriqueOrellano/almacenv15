@@ -109,12 +109,8 @@ export class BaseCrud extends baseDB implements IDatabase {
           }, (err, response) => {
             return response
           })
-          
-          
     }
     async create<T>(input: createInput<T>, range: string='A2:I'): Promise<any> {
-        
-        
         const payload = await this.sheet.spreadsheets.values.append({
           spreadsheetId: this.spreadSheetId,
           range: `${this.rangeEntity.toUpperCase()}!${range}`,
@@ -123,12 +119,8 @@ export class BaseCrud extends baseDB implements IDatabase {
             majorDimension: 'ROWS',        
             values: [Object.values(input.dataObj)],
           }    })
-        return payload
-        
+        return payload   
     }
-    
-   
-    
 }
 export class EjecucionObraCRUD extends BaseCrud{
   async setFormula(celda:Iinsumo){
@@ -142,28 +134,22 @@ export class EjecucionObraCRUD extends BaseCrud{
         majorDimension: 'ROWS',        
         values: [[query]],
       }
-      
     })
     return payload.data
-
   }
   async getFormula2():Promise<string>{
-    
     const getRows = await this.sheet.spreadsheets.values.get(
       {
         auth: this.auth,
         spreadsheetId:this.spreadSheetId,
         range: 'AJUSTES!J2',  
       },
-      
     )
     return await getRows.data.values[0][0]
-
   }
   async setFormulaActiveCell(idinsumo:string){
-    
     const  query =  `=CELL("address";INDEX(INSUMO!A2:A;MATCH("${idinsumo}";INSUMO!A2:A;0)))` 
-    await this.sheet.spreadsheets.values.append({
+    const der = await this.sheet.spreadsheets.values.append({
       spreadsheetId: this.spreadSheetId,
       range: 'AJUSTES!J2',
       insertDataOption: 'INSERT_ROWS',
@@ -174,12 +160,8 @@ export class EjecucionObraCRUD extends BaseCrud{
       }
       
     })
-  
-
-
   }
   async getFormulaActiveCell(){
-
     const getRows = await this.sheet.spreadsheets.values.get(
         {
           auth: this.auth,
@@ -188,8 +170,10 @@ export class EjecucionObraCRUD extends BaseCrud{
         },
         
       )
-      
-      return await getRows.data.values[0][0]
+      const resultado = await getRows.data.values[0][0]
+      //eliminar la nueva fila creada
+      this.deleteById({row:2,sheetId:"1598237507"})  
+      return resultado
 }
 }
 import { Injectable } from '@nestjs/common';
