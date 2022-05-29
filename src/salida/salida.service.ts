@@ -3,6 +3,12 @@ import { google } from 'googleapis';
 import { Injectable } from '@nestjs/common';
 import { UpdateSalidaDto } from './dto/update-salida.dto';
 import { Salida } from './entities/salida.entity';
+import { IConsulta } from './interfaces/salida.interface';
+
+export interface ICelda{
+  idinsumo:string
+
+}
 
 
 
@@ -41,11 +47,10 @@ export class SalidaService {
       spreadsheetId: "1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
       range: 'SALIDA!A2:G',
       valueInputOption: 'USER_ENTERED',
-      requestBody: {
+      resource:{
+        majorDimension: 'ROWS',        
         values: [[idsalida,nroficharequerimiento,infcomplementaria,idinsumo,cantidad,obs,fechasalida]],
-
-      },
-    })
+      }    })
     return payload
     
   }
@@ -62,39 +67,93 @@ export class SalidaService {
     return getRows.data
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} salida`;
+  async findOne(id: number) {
+
+
+
+
   }
 
   update(id: number, updateSalidaDto: UpdateSalidaDto) {
     return `This action updates a #${id} salida`;
   }
-
+//elimina toda la fila sin dejar celdas vaciass
   async remove(id: number) {
-    const res = await this.sheet.spreadsheets.values.update({
-      
-      includeValuesInResponse: true,
-            
-      responseDateTimeRenderOption: 'SERIAL_NUMBER',
-      // Determines how values in the response should be rendered. The default render option is FORMATTED_VALUE.
-      responseValueRenderOption: 'FORMATTED_VALUE',
-      // The ID of the spreadsheet to update.
-      spreadsheetId: '1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA',
-      // How the input data should be interpreted.
-      valueInputOption: 'USER_ENTERED',
-      range:'SALIDA!A48:G48',
-  
-      // Request body metadata
-      requestBody: {
-       /* // request body parameters
-        
-          majorDimension: "ROWS",
-          range:'SALIDA!A48:G48',
-          values: []*/
-        }
-    
+    const res = await this.sheet.spreadsheets.batchUpdate({
+      auth: this.auth,
+      spreadsheetId: "1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
+      resource: {
+        "requests": 
+        [
+          {
+            "deleteRange": 
+            {
+              "range": 
+              {
+                "sheetId": "1400823764", // gid
+                "startRowIndex": id - 1,//empieza de 43
+                "endRowIndex": id
+              },
+              "shiftDimension": "ROWS"
+            }
+          }
+        ]
+      }
+    }, (err, response) => {
+      return response
     })
-    return res.data
+    
+    //return res
+  
   }
+  async setFormula(consulta:IConsulta){
+    
+    const  query =  `=query(INSUMO!A1:D;"select A,B,C where B= '${consulta.insumo}' ")` 
+    const payload = await this.sheet.spreadsheets.values.append({
+      spreadsheetId: "1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
+      range: 'AJUSTES!A1',
+      insertDataOption: 'INSERT_ROWS',
+      valueInputOption: 'USER_ENTERED',
+      resource:{
+        majorDimension: 'ROWS',        
+        values: [[query]],
+      }
+      
+    })
+    return payload.data
+
+
+  }
+  async getQuery(){
+    const getRows = await this.sheet.spreadsheets.values.get(
+      {
+        auth: this.auth,
+        spreadsheetId:"1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
+        range: 'AJUSTES!A1',  
+      },
+      
+    )
+    return getRows.data
+
+  }
+  async setFormulaActiveCell(celda:ICelda){
+    
+    const  query =  `=query(INSUMO!A1:D;"select A,B,C where B= '${celda.idinsumo}' ")` 
+    const payload = await this.sheet.spreadsheets.values.append({
+      spreadsheetId: "1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
+      range: 'AJUSTES!A1',
+      insertDataOption: 'INSERT_ROWS',
+      valueInputOption: 'USER_ENTERED',
+      resource:{
+        majorDimension: 'ROWS',        
+        values: [[query]],
+      }
+      
+    })
+    return payload.data
+
+
+  }
+  
 }
 

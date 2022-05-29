@@ -3,6 +3,7 @@ import { SalidaService } from './salida.service';
 import { CreateSalidaDto } from './dto/create-salida.dto';
 import { UpdateSalidaDto } from './dto/update-salida.dto';
 import { Salida } from './entities/salida.entity';
+import { IConsulta } from './interfaces/salida.interface';
 
 @Controller('salida')
 export class SalidaController {
@@ -18,7 +19,7 @@ export class SalidaController {
     return this.salidaService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id/findone')
   findOne(@Param('id') id: string) {
     return this.salidaService.findOne(+id);
   }
@@ -32,4 +33,14 @@ export class SalidaController {
   remove(@Param('id') id: string) {
     return this.salidaService.remove(+id);
   }
+
+  @Post('setformula')
+  setFormula(@Body() insumo: IConsulta) {
+    return this.salidaService.setFormula(insumo);
+  }
+  @Get('getformula')
+  getFormula() {
+    return this.salidaService.getQuery();
+  }
+
 }
