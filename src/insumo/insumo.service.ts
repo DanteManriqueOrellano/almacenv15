@@ -9,13 +9,9 @@ import { ICelda } from 'src/salida/salida.service';
 @Injectable()
 export class InsumoService {
   
-  constructor(private db:ConfigdbService,private ctx: EjecucionObraContex){ }
-   
+  constructor(private ctx: EjecucionObraContex){ }
   async create(createInsumoDto: Insumo) { 
-    
-      
     return this.ctx.dataSource.create({dataObj:createInsumoDto});
-    
   }
 
   async findAll() {
@@ -58,62 +54,5 @@ export class InsumoService {
 
 
 
-/*
-  async setFormula(consulta:Iinsumo){
-    
-    const  query =  `=QUERY({SALIDA!A2:G500\\ARRAYFORMULA(IF(SALIDA!D2:D500="";"";VLOOKUP(SALIDA!D2:D500;{INSUMO!A2:D500};{2\\4};FALSE)))};"SELECT Col8,Col9 where Col8 = '${consulta.insumo}'")` 
-    const payload = await this.db.sheet.spreadsheets.values.append({
-      spreadsheetId: "1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
-      range: 'AJUSTES!A1',
-      insertDataOption: 'INSERT_ROWS',
-      valueInputOption: 'USER_ENTERED',
-      resource:{
-        majorDimension: 'ROWS',        
-        values: [[query]],
-      }
-      
-    })
-    return payload.data
-
-
-  }
-  async getQuery(){
-    const getRows = await this.db.sheet.spreadsheets.values.get(
-      {
-        auth: this.db.auth,
-        spreadsheetId:"1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
-        range: 'AJUSTES!A1',  
-      },
-      
-    )
-    return getRows.data
-
-  }
-  async deleteFormula(id:number){
-    const res = await this.db.sheet.spreadsheets.batchUpdate({
-      auth: this.db.auth,
-      spreadsheetId: "1Smlg0vdnDPWPdQ_6023ex9OTwnMwVjgtfjEQyIuPQGA",
-      resource: {
-        "requests": 
-        [
-          {
-            "deleteRange": 
-            {
-              "range": 
-              {
-                "sheetId": "1201560136", // gid
-                "startRowIndex": id - 1,//empieza de 43
-                "endRowIndex": id
-              },
-              "shiftDimension": "ROWS"
-            }
-          }
-        ]
-      }
-    }, (err, response) => {
-      return response
-    })
-
-  }*/
 
 }

@@ -123,6 +123,7 @@ export class BaseCrud extends baseDB implements IDatabase {
     }
 }
 export class EjecucionObraCRUD extends BaseCrud{
+  
   async setFormula(celda:Iinsumo){
     const  query =  `=CELL("address";INDEX(INSUMO!A2:A;MATCH("${celda.insumo}";INSUMO!A2:A;0)))` 
     const payload = await this.sheet.spreadsheets.values.append({
@@ -148,22 +149,14 @@ export class EjecucionObraCRUD extends BaseCrud{
     return await getRows.data.values[0][0]
   }
   async setFormulaActiveCell(idinsumo:string){
-    const  query =  `=CELL("address";INDEX(INSUMO!A2:A;MATCH("${idinsumo}";INSUMO!A2:A;0)))` 
-    const der = await this.sheet.spreadsheets.values.append({
-      spreadsheetId: this.spreadSheetId,
-      range: 'AJUSTES!J2',
-      insertDataOption: 'INSERT_ROWS',
-      valueInputOption: 'USER_ENTERED',
-      resource:{
-        majorDimension: 'ROWS',        
-        values: [[query]],
-      }
-      
-    })
+    const  query:string =  `=CELL("address";INDEX(INSUMO!A2:A;MATCH("${idinsumo}";INSUMO!A2:A;0)))` 
+     await this.sheet.spreadsheets.values.append(setFormulaSheetAjustes(query,this.spreadSheetId))
   }
   async getFormulaActiveCell(){
+    
     const getRows = await this.sheet.spreadsheets.values.get(
-        {
+        
+      {
           auth: this.auth,
           spreadsheetId:this.spreadSheetId,
           range: 'AJUSTES!J2',  
@@ -177,8 +170,9 @@ export class EjecucionObraCRUD extends BaseCrud{
 }
 }
 import { Injectable } from '@nestjs/common';
-import { ICelda } from 'src/salida/salida.service';
 import { Iinsumo } from 'src/insumo/interfaces/iinsumo.interface';
+import { setFormulaSheetAjustes } from 'src/utils/utils.sheet';
+
 
 @Injectable()
 export class EjecucionObraContex{
