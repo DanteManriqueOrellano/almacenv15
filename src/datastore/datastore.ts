@@ -83,7 +83,7 @@ export class BaseCrud extends baseDB implements IDatabase {
             },
             
           )
-          return getRows.data
+          return getRows.data.values
     }
     async deleteById(ve:{row: number,sheetId:string}): Promise<any> {
         await this.sheet.spreadsheets.batchUpdate({
