@@ -163,10 +163,8 @@ export class BaseCrud extends baseDB implements IDatabase {
     retorno = inicio.map((value)=>{
       return {
         idproveedor:value[0],
-        razon:value[1],
-        social:value[2],
-        ruc:value[3]
-
+        razon_social:value[1],
+        ruc:value[2]
       }
 
     })
