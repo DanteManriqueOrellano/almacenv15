@@ -42,10 +42,13 @@ interface IDatabase {
 }
 export class BaseCrud extends baseDB implements IDatabase {
     rangeEntity:any
+    
+    
     constructor(entity:any){
         super()
         const der  =  new entity()
         this.rangeEntity = der.constructor.name
+       
         
     }
     async update<T>(input: createInput<T>, range: string): Promise<any> {
@@ -74,8 +77,10 @@ export class BaseCrud extends baseDB implements IDatabase {
           }
        
     }
-    async listAll<T>(range:string='A2:I'): Promise<any[]> {
-        const getRows = await this.sheet.spreadsheets.values.get(
+    async listAll<T>(range:string='A2:I10'){//: Promise<any[]> {
+      
+       
+      const getRows = await this.sheet.spreadsheets.values.get(
             {
               auth: this.auth,
               spreadsheetId:this.spreadSheetId ,
@@ -83,7 +88,87 @@ export class BaseCrud extends baseDB implements IDatabase {
             },
             
           )
-          return getRows.data.values
+        var retorno
+        const inicio = getRows.data.values
+
+          if(this.rangeEntity.toUpperCase() === 'INSUMO'){
+            retorno = inicio.map((value)=>{
+              return {
+                idinsumo:value[0],
+                insumo:value[1],
+                umedida:value[2],
+                idcategoria:value[3]
+
+              }
+
+            })
+            
+          return  retorno
+        }
+        if(this.rangeEntity.toUpperCase() === 'INGRESO'){
+          retorno = inicio.map((value)=>{
+            return {
+              idingreso:value[0],
+              iddocumento:value[1],
+              idinsumo:value[2],
+              idproveedor:value[3],
+              fingreso:value[4],
+              nrodocumento:value[5],
+              cantidad:value[6],
+              punitario:value[7],
+              reingreso:value[8]
+
+            }
+
+          })
+          
+        return  retorno
+      }
+      if(this.rangeEntity.toUpperCase() === 'SALIDA'){
+        retorno = inicio.map((value)=>{
+          return {
+            idsalida:value[0],
+            nroficharequerimiento:value[1],
+            infcomplementaria:value[2],
+            idinsumo:value[3],
+            cantidad:value[4],
+            obs:value[5],
+            fechasalida:value[6],
+
+          }
+
+        })
+        
+      return  retorno
+    }
+    if(this.rangeEntity.toUpperCase() === 'REQUERIMIENTO'){
+      retorno = inicio.map((value)=>{
+        return {
+          idrequerimiento:value[0],
+          fpedido:value[1],
+          idinsumo:value[2],
+          frequerida:value[3],
+          infcomplementaria:value[4],
+          cantidad:value[5],
+          secuencia_origen_requerimiento:value[6]
+
+        }
+
+      })
+      
+    return  retorno
+  }
+
+
+
+
+
+
+
+
+          
+          
+
     }
     async deleteById(ve:{row: number,sheetId:string}): Promise<any> {
         await this.sheet.spreadsheets.batchUpdate({
@@ -123,7 +208,7 @@ export class BaseCrud extends baseDB implements IDatabase {
     }
 }
 export class EjecucionObraCRUD extends BaseCrud{
-  
+    
   async setFormula(celda:Iinsumo){
     const  query =  `=CELL("address";INDEX(INSUMO!A2:A;MATCH("${celda.insumo}";INSUMO!A2:A;0)))` 
     const payload = await this.sheet.spreadsheets.values.append({
