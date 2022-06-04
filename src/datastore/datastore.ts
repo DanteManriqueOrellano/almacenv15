@@ -77,7 +77,7 @@ export class BaseCrud extends baseDB implements IDatabase {
           }
        
     }
-    async listAll<T>(range:string='A2:I10'){//: Promise<any[]> {
+    async listAll<T>(range:string='A2:I'){//: Promise<any[]> {
       
        
       const getRows = await this.sheet.spreadsheets.values.get(
