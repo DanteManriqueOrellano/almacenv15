@@ -5,11 +5,9 @@ import { UpdateInsumoDto } from './dto/update-insumo.dto';
 import { Insumo } from './entities/insumo.entity';
 import { Iinsumo } from './interfaces/iinsumo.interface';
 import { ICelda } from 'src/salida/salida.service';
+import { IDeleteRow } from 'src/utils/arguments.delete';
 
-export interface IDelete{
-  row:number,
-  sheetId:string
-}
+
 @Controller('insumo')
 export class InsumoController {
   constructor(private readonly insumoService: InsumoService) {}
@@ -35,7 +33,7 @@ export class InsumoController {
   }
 
   @Delete(':row/:sheetId')
-  remove(@Param() eliminar: IDelete) {
+  remove(@Param() eliminar: IDeleteRow) {
     console.log(eliminar)
     return this.insumoService. remove(eliminar);
   }

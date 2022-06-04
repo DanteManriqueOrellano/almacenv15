@@ -77,7 +77,8 @@ export class BaseCrud extends baseDB implements IDatabase {
           }
        
     }
-    async listAll<T>(range:string='A2:I'){//: Promise<any[]> {
+    async listAll<T>(range:string='A2:I'): Promise<any[]> {
+      console.log("como estas")
       
        
       const getRows = await this.sheet.spreadsheets.values.get(
@@ -158,6 +159,20 @@ export class BaseCrud extends baseDB implements IDatabase {
       
     return  retorno
   }
+  if(this.rangeEntity.toUpperCase() === 'PROVEEDOR'){
+    retorno = inicio.map((value)=>{
+      return {
+        idproveedor:value[0],
+        razon:value[1],
+        social:value[2],
+        ruc:value[3]
+
+      }
+
+    })
+    
+  return  retorno
+}
 
 
 
