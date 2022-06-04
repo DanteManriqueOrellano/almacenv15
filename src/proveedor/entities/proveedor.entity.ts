@@ -1,6 +1,5 @@
 export class Proveedor {
     idproveedor:number;
-    razon:string;
-    social:string;
+    razon_social:string;
     ruc:string;
 }
